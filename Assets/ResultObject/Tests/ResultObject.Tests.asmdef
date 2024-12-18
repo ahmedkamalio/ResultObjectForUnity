@@ -1,0 +1,9 @@
+{
+  "name": "ResultObject.Tests",
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "references": [
+    "ResultObject"
+  ]
+}

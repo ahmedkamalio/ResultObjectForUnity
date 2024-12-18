@@ -1,0 +1,35 @@
+{
+  "name": "io.ahmedkamal.unity.resultobject",
+  "version": "1.0.0",
+  "displayName": "ResultObject For Unity",
+  "description": "A lightweight, zero-dependency Result pattern implementation for Unity projects. Handle operation outcomes cleanly without exceptions.",
+  "unity": "2021.3",
+  "keywords": [
+    "Result Pattern",
+    "Error Handling",
+    "Functional Programming",
+    "Railway-Oriented Programming",
+    "Exception-free",
+    "Type-safe",
+    "Thread-safe",
+    "Immutable",
+    "Zero-allocation",
+    "Unity",
+    ".NET",
+    "C#",
+    "Discriminated Union",
+    "Monadic Operations",
+    "Fluent Interface",
+    "Builder Pattern",
+    "Error Propagation",
+    "Operation Chaining",
+    "Pattern Matching",
+    "Composite Operations"
+  ],
+  "author": {
+    "name": "Ahmed Kamal",
+    "email": "mail@ahmedkamal.io",
+    "url": "https://ahmedkamal.io"
+  },
+  "dependencies": {}
+}
