@@ -16,7 +16,7 @@ without exceptions.
 1. Open the Unity Package Manager
 2. Click the '+' button in the top-left corner
 3. Select "Add package from git URL"
-4. Enter: `https://github.com/ahmedkamalio/ResultObjectForUnity`
+4. Enter: `https://github.com/ahmedkamalio/ResultObjectForUnity.git?path=/Assets/ResultObject`
 
 ## Quick Start
 
