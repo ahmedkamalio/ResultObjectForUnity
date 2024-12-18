@@ -1,3 +1,3 @@
 # ResultObject
 
-See [Assets/ResultObject/README.md](https://raw.githubusercontent.com/ahmedkamalio/ResultObjectForUnity/refs/heads/main/Assets/ResultObject/README.md)
+See [Assets/ResultObject/README.md](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/Assets/ResultObject/README.md)

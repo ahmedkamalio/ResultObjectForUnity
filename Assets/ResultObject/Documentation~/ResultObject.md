@@ -206,5 +206,5 @@ Please refer to the project's contribution guidelines for information about cont
 ## License
 
 This validation library is licensed under the MIT License - see
-the [LICENSE](https://raw.githubusercontent.com/ahmedkamalio/ResultObjectForUnity/refs/heads/main/Assets/ResultObject/LICENSE)
+the [LICENSE](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/Assets/ResultObject/LICENSE)
 file for details.

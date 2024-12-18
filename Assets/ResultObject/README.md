@@ -5,11 +5,11 @@ without exceptions.
 
 ## Features
 
-✨ **Type-Safe Error Handling** - Handle failures without throwing exceptions
-🧩 **Composable** - Chain operations with functional programming patterns
-⚡ **High Performance** - Zero-allocation patterns and lightweight structs
-🧵 **Thread-Safe** - Immutable types safe for concurrent use
-📘 **Well-Documented** - Comprehensive XML documentation and examples
+- ✨ **Type-Safe Error Handling** - Handle failures without throwing exceptions.
+- 🧩 **Composable** - Chain operations with functional programming patterns.
+- ⚡ **High Performance** - Zero-allocation patterns and lightweight structs.
+- 🧵 **Thread-Safe** - Immutable types safe for concurrent use.
+- 📘 **Well-Documented** - Comprehensive XML documentation and examples.
 
 ## Installation
 
@@ -54,16 +54,16 @@ Result<int> result = Result.Try(() =>
 
 For complete documentation, see:
 
-- [API Reference](https://raw.githubusercontent.com/ahmedkamalio/ResultObjectForUnity/refs/heads/main/Assets/ResultObject/Documentation~ResultObject.md)
+- [API Reference](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/Assets/ResultObject/Documentation~/ResultObject.md)
 
 ## Contributing
 
 Contributions are welcome! Please read
-our [Contributing Guidelines](https://raw.githubusercontent.com/ahmedkamalio/ResultObjectForUnity/refs/heads/main/Assets/ResultObject/CONTRIBUTING.md)
+our [Contributing Guidelines](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/Assets/ResultObject/CONTRIBUTING.md)
 before submitting PRs.
 
 ## License
 
 This validation library is licensed under the MIT License - see
-the [LICENSE](https://raw.githubusercontent.com/ahmedkamalio/ResultObjectForUnity/refs/heads/main/Assets/ResultObject/LICENSE)
+the [LICENSE](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/Assets/ResultObject/LICENSE)
 file for details.
