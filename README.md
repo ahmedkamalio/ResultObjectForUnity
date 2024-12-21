@@ -59,7 +59,7 @@ For complete documentation, see:
 ## Contributing
 
 Contributions are welcome! Please read
-our [Contributing Guidelines](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/Assets/ResultObject/CONTRIBUTING.md)
+our [Contributing Guidelines](https://github.com/ahmedkamalio/ResultObjectForUnity/blob/main/CONTRIBUTING.md)
 before submitting PRs.
 
 ## License
