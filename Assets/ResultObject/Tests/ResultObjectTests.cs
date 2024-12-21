@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using NUnit.Framework;
 
@@ -390,6 +392,161 @@ namespace ResultObject.Tests
             Assert.False(isSuccess);
             Assert.AreEqual(value, 0);
             Assert.AreEqual(error, expectedError);
+        }
+
+        #endregion
+
+        #region ResultError Operator and Method Tests
+
+        [Test]
+        public void ResultError_ImplicitOperator_CreatesErrorFromString()
+        {
+            // Arrange
+            const string errorMessage = "Test error message";
+
+            // Act
+            ResultError error = errorMessage;
+
+            // Assert
+            Assert.AreEqual(errorMessage, error.Message);
+            Assert.IsNull(error.Code);
+            Assert.IsNull(error.InternalException);
+        }
+
+        [Test]
+        public void ResultError_EqualityOperator_ComparesCorrectly()
+        {
+            // Arrange
+            var error1 = new ResultError("Error", "CODE1");
+            var error2 = new ResultError("Error", "CODE1");
+            var error3 = new ResultError("Different", "CODE1");
+
+            // Assert
+            Assert.True(error1 == error2);
+            Assert.False(error1 == error3);
+        }
+
+        [Test]
+        public void ResultError_InequalityOperator_ComparesCorrectly()
+        {
+            // Arrange
+            var error1 = new ResultError("Error", "CODE1");
+            var error2 = new ResultError("Error", "CODE1");
+            var error3 = new ResultError("Different", "CODE1");
+
+            // Assert
+            Assert.False(error1 != error2);
+            Assert.True(error1 != error3);
+        }
+
+        [Test]
+        public void ResultError_EqualsObject_HandlesNullAndTypeMismatch()
+        {
+            // Arrange
+            var error = new ResultError("Error");
+
+            // Assert
+            Assert.False(error.Equals(null!));
+            Assert.False(error.Equals("not a ResultError"));
+            Assert.True(error.Equals((object)new ResultError("Error")));
+        }
+
+        [Test]
+        public void ResultError_GetHashCode_ReturnsConsistentValue()
+        {
+            // Arrange
+            var error1 = new ResultError("Error", "CODE1");
+            var error2 = new ResultError("Error", "CODE1");
+            var error3 = new ResultError("Different", "CODE1");
+
+            // Assert
+            Assert.AreEqual(error1.GetHashCode(), error2.GetHashCode());
+            Assert.AreNotEqual(error1.GetHashCode(), error3.GetHashCode());
+        }
+
+        #endregion
+
+        #region Exception Tests for Null Arguments
+
+        [Test]
+        public void Try_NullAction_ThrowsArgumentNullException()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => Result.Try<int>(null!));
+        }
+
+        [Test]
+        public void Map_NullMapper_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var result = Result.Success(42);
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => result.Map<string>(null!));
+        }
+
+        [Test]
+        public void Bind_NullBinder_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var result = Result.Success(42);
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => result.Bind<string>(null!));
+        }
+
+        [Test]
+        public void MatchInternal_NullSuccessFunction_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var result = Result.Success(42);
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => result.Match<string>(
+                success: null!,
+                failure: _ => "failure"
+            ));
+        }
+
+        [Test]
+        public void MatchInternal_NullFailureFunction_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var result = Result.Failure<int>("error");
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => result.Match<string>(
+                success: _ => "success",
+                failure: null!
+            ));
+        }
+
+        #endregion
+
+        #region Unit Value Type Tests
+
+        [Test]
+        public void Unit_EqualsObject_HandlesNullAndTypeMismatch()
+        {
+            // Arrange
+            var unit = Unit.Value;
+
+            // Assert
+            Assert.False(unit.Equals(null));
+            Assert.True(unit.Equals((object)default(Unit)));
+        }
+
+        [Test]
+        public void Unit_GetHashCode_ReturnsZero()
+        {
+            // Arrange
+            var unit1 = Unit.Value;
+            var unit2 = default(Unit);
+
+            // Assert
+            Assert.AreEqual(0, unit1.GetHashCode());
+            Assert.AreEqual(0, unit2.GetHashCode());
+            Assert.AreEqual(unit1.GetHashCode(), unit2.GetHashCode());
         }
 
         #endregion

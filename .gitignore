@@ -86,3 +86,5 @@ Assets/Plugins/Editor/JetBrains*
 Recordings/
 
 *.DotSettings
+
+CodeCoverage/
