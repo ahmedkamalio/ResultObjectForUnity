@@ -31,5 +31,12 @@
     "email": "mail@ahmedkamal.io",
     "url": "https://ahmedkamal.io"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Basic Usage",
+      "description": "Demo Save Game System",
+      "path": "Samples~/BasicUsage"
+    }
+  ]
 }
