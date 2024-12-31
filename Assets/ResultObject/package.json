@@ -1,6 +1,6 @@
 {
   "name": "io.ahmedkamal.unity.resultobject",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "ResultObject For Unity",
   "description": "A lightweight, zero-dependency Result pattern implementation for Unity projects. Handle operation outcomes cleanly without exceptions.",
   "unity": "2021.3",

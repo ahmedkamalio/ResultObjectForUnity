@@ -316,6 +316,29 @@ namespace ResultObject
         }
 
         /// <summary>
+        /// Pattern matches on the result, executing one of two actions depending on
+        /// whether the result represents success or failure.
+        /// </summary>
+        /// <param name="success">The action to execute if the result represents success.</param>
+        /// <param name="failure">The action to execute if the result represents failure.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when success is null and the result represents success;
+        /// OR when failure is null and the result represents failure.
+        /// </exception>
+        /// <example>
+        /// <code>
+        /// result.Match(
+        ///     success: value => Console.WriteLine($"Success: {value}"),
+        ///     failure: error => Console.WriteLine($"Error: {error}")
+        /// );
+        /// </code>
+        /// </example>
+        public void Match(Action<TValue> success, Action<ResultError> failure)
+        {
+            MatchInternal(success, failure);
+        }
+
+        /// <summary>
         /// Deconstructs the result into its components for use with C# deconstruction syntax.
         /// </summary>
         /// <param name="isSuccess">When this method returns, indicates whether the result represents success.</param>
@@ -351,6 +374,18 @@ namespace ResultObject
         /// </remarks>
         protected abstract TResult MatchInternal<TResult>(Func<TValue, TResult> success,
             Func<ResultError, TResult> failure);
+
+        /// <summary>
+        /// Internal implementation of pattern matching logic for action-based pattern matching.
+        /// </summary>
+        /// <param name="success">The action to execute if the result represents success.</param>
+        /// <param name="failure">The action to execute if the result represents failure.</param>
+        /// <remarks>
+        /// This protected method is implemented by <see cref="Result{TValue}.SuccessResult"/> and
+        /// <see cref="Result{TValue}.FailureResult"/> to provide their specific pattern matching behavior.
+        /// The public Match method delegates to this implementation.
+        /// </remarks>
+        protected abstract void MatchInternal(Action<TValue> success, Action<ResultError> failure);
 
         /// <summary>
         /// Internal implementation of value retrieval logic for the specific result type.
@@ -417,17 +452,16 @@ namespace ResultObject
             }
 
             /// <summary>
-            /// Internal implementation of pattern matching logic for the specific result type.
+            /// Executes the success function with the stored value when pattern matching.
             /// </summary>
             /// <typeparam name="TResult">The type of value returned by the pattern matching functions.</typeparam>
-            /// <param name="success">The function to execute if the result represents success.</param>
-            /// <param name="failure">The function to execute if the result represents failure.</param>
-            /// <returns>The value returned by either the success or failure function.</returns>
-            /// <exception cref="ArgumentNullException">Thrown when success is null.</exception>
+            /// <param name="success">The function to execute with the stored success value.</param>
+            /// <param name="failure">The function for failure cases (unused in SuccessResult).</param>
+            /// <returns>The result of executing the success function with the stored value.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when the success function is null.</exception>
             /// <remarks>
-            /// This protected abstract method is implemented by <see cref="Result{TValue}.SuccessResult"/> and
-            /// <see cref="Result{TValue}.FailureResult"/> to provide their specific pattern matching behavior.
-            /// The public <see cref="Result{TValue}.Match{TResult}"/> method delegates to this implementation.
+            /// This method implements the pattern matching behavior specific to successful results.
+            /// The failure function parameter is ignored since this represents a success case.
             /// </remarks>
             protected override TResult MatchInternal<TResult>(Func<TValue, TResult> success,
                 Func<ResultError, TResult> failure)
@@ -441,15 +475,33 @@ namespace ResultObject
             }
 
             /// <summary>
-            /// Internal implementation of value retrieval logic for the specific result type.
+            /// Executes the success action with the stored value when pattern matching.
             /// </summary>
-            /// <param name="value">When this method returns, contains the value if the result represents success,
-            /// or the default value of <c>TValue</c> if the result represents failure.</param>
-            /// <returns>true if the result represents success and the value was retrieved; otherwise, false.</returns>
+            /// <param name="success">The action to execute with the stored success value.</param>
+            /// <param name="failure">The action for failure cases (unused in SuccessResult).</param>
+            /// <exception cref="ArgumentNullException">Thrown when the success action is null.</exception>
             /// <remarks>
-            /// This protected abstract method is implemented by <see cref="Result{TValue}.SuccessResult"/> and
-            /// <see cref="Result{TValue}.FailureResult"/> to provide their specific value retrieval behavior.
-            /// The public <see cref="Result{TValue}.TryGetValue"/> method delegates to this implementation.
+            /// This method implements the pattern matching behavior specific to successful results.
+            /// The failure action parameter is ignored since this represents a success case.
+            /// </remarks>
+            protected override void MatchInternal(Action<TValue> success, Action<ResultError> failure)
+            {
+                if (success is null)
+                {
+                    throw new ArgumentNullException(nameof(success));
+                }
+
+                success(Value);
+            }
+
+            /// <summary>
+            /// Retrieves the stored success value.
+            /// </summary>
+            /// <param name="value">When this method returns, contains the stored success value.</param>
+            /// <returns>Always returns true, indicating successful value retrieval.</returns>
+            /// <remarks>
+            /// This method provides the value retrieval behavior specific to successful results.
+            /// It will always succeed in retrieving the value since this represents a success case.
             /// </remarks>
             protected override bool TryGetValueInternal(out TValue value)
             {
@@ -458,15 +510,13 @@ namespace ResultObject
             }
 
             /// <summary>
-            /// Internal implementation of error retrieval logic for the specific result type.
+            /// Attempts to retrieve an error from this successful result.
             /// </summary>
-            /// <param name="error">When this method returns, contains the error if the result represents failure,
-            /// or the default <see cref="ResultError"/> value if the result represents success.</param>
-            /// <returns>true if the result represents failure and the error was retrieved; otherwise, false.</returns>
+            /// <param name="error">When this method returns, contains the default ResultError value.</param>
+            /// <returns>Always returns false, indicating no error is present.</returns>
             /// <remarks>
-            /// This protected abstract method is implemented by <see cref="Result{TValue}.SuccessResult"/> and
-            /// <see cref="Result{TValue}.FailureResult"/> to provide their specific error retrieval behavior.
-            /// The public <see cref="Result{TValue}.TryGetError"/> method delegates to this implementation.
+            /// This method provides the error retrieval behavior specific to successful results.
+            /// It will always fail to retrieve an error since this represents a success case.
             /// </remarks>
             protected override bool TryGetErrorInternal(out ResultError error)
             {
@@ -513,19 +563,17 @@ namespace ResultObject
                 Error = error;
             }
 
-            // Override abstract methods
             /// <summary>
-            /// Internal implementation of pattern matching logic for the specific result type.
+            /// Executes the failure function with the stored error when pattern matching.
             /// </summary>
             /// <typeparam name="TResult">The type of value returned by the pattern matching functions.</typeparam>
-            /// <param name="success">The function to execute if the result represents success.</param>
-            /// <param name="failure">The function to execute if the result represents failure.</param>
-            /// <returns>The value returned by either the success or failure function.</returns>
-            /// <exception cref="ArgumentNullException">Thrown when failure is null.</exception>
+            /// <param name="success">The function for success cases (unused in FailureResult).</param>
+            /// <param name="failure">The function to execute with the stored error.</param>
+            /// <returns>The result of executing the failure function with the stored error.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when the failure function is null.</exception>
             /// <remarks>
-            /// This protected abstract method is implemented by <see cref="Result{TValue}.SuccessResult"/> and <see cref="Result{TValue}.FailureResult"/>
-            /// to provide their specific pattern matching behavior. The public <see cref="Result{TValue}.Match{TResult}"/> method
-            /// delegates to this implementation.
+            /// This method implements the pattern matching behavior specific to failed results.
+            /// The success function parameter is ignored since this represents a failure case.
             /// </remarks>
             protected override TResult MatchInternal<TResult>(Func<TValue, TResult> success,
                 Func<ResultError, TResult> failure)
@@ -539,15 +587,33 @@ namespace ResultObject
             }
 
             /// <summary>
-            /// Internal implementation of value retrieval logic for the specific result type.
+            /// Executes the failure action with the stored error when pattern matching.
             /// </summary>
-            /// <param name="value">When this method returns, contains the value if the result represents success,
-            /// or the default value of <c>TValue</c> if the result represents failure.</param>
-            /// <returns>true if the result represents success and the value was retrieved; otherwise, false.</returns>
+            /// <param name="success">The action for success cases (unused in FailureResult).</param>
+            /// <param name="failure">The action to execute with the stored error.</param>
+            /// <exception cref="ArgumentNullException">Thrown when the failure action is null.</exception>
             /// <remarks>
-            /// This protected abstract method is implemented by <see cref="Result{TValue}.SuccessResult"/> and
-            /// <see cref="Result{TValue}.FailureResult"/> to provide their specific value retrieval behavior.
-            /// The public <see cref="Result{TValue}.TryGetValue"/> method delegates to this implementation.
+            /// This method implements the pattern matching behavior specific to failed results.
+            /// The success action parameter is ignored since this represents a failure case.
+            /// </remarks>
+            protected override void MatchInternal(Action<TValue> success, Action<ResultError> failure)
+            {
+                if (failure is null)
+                {
+                    throw new ArgumentNullException(nameof(failure));
+                }
+
+                failure(Error);
+            }
+
+            /// <summary>
+            /// Attempts to retrieve a value from this failed result.
+            /// </summary>
+            /// <param name="value">When this method returns, contains the default value of type TValue.</param>
+            /// <returns>Always returns false, indicating no value is present.</returns>
+            /// <remarks>
+            /// This method provides the value retrieval behavior specific to failed results.
+            /// It will always fail to retrieve a value since this represents a failure case.
             /// </remarks>
             protected override bool TryGetValueInternal(out TValue value)
             {
@@ -556,15 +622,13 @@ namespace ResultObject
             }
 
             /// <summary>
-            /// Internal implementation of error retrieval logic for the specific result type.
+            /// Retrieves the stored error.
             /// </summary>
-            /// <param name="error">When this method returns, contains the error if the result represents failure,
-            /// or the default <see cref="ResultError"/> value if the result represents success.</param>
-            /// <returns>true if the result represents failure and the error was retrieved; otherwise, false.</returns>
+            /// <param name="error">When this method returns, contains the stored error.</param>
+            /// <returns>Always returns true, indicating successful error retrieval.</returns>
             /// <remarks>
-            /// This protected abstract method is implemented by <see cref="Result{TValue}.SuccessResult"/> and
-            /// <see cref="Result{TValue}.FailureResult"/> to provide their specific error retrieval behavior.
-            /// The public <see cref="Result{TValue}.TryGetError"/> method delegates to this implementation.
+            /// This method provides the error retrieval behavior specific to failed results.
+            /// It will always succeed in retrieving the error since this represents a failure case.
             /// </remarks>
             protected override bool TryGetErrorInternal(out ResultError error)
             {

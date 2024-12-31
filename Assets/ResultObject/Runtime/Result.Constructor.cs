@@ -58,6 +58,32 @@ namespace ResultObject
         public static Result<TValue> Success<TValue>(TValue value) => Result<TValue>.Success(value);
 
         /// <summary>
+        /// Creates a success Result containing Unit.Value, representing a successful operation with no value.
+        /// </summary>
+        /// <returns>A new Result instance representing a successful operation with Unit.Value.</returns>
+        /// <remarks>
+        /// This method is a convenience overload for operations that don't return a meaningful value
+        /// but need to indicate success or failure. It's equivalent to calling Success(Unit.Value).
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// public Result&lt;Unit&gt; DeleteUser(int userId)
+        /// {
+        ///     try
+        ///     {
+        ///         _repository.DeleteUser(userId);
+        ///         return Result.Success();  // Return success with no value
+        ///     }
+        ///     catch (Exception ex)
+        ///     {
+        ///         return Result.Failure(ex);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        public static Result<Unit> Success() => Result<Unit>.Success(ResultObject.Unit.Value);
+
+        /// <summary>
         /// Creates a failure Result containing the specified error.
         /// </summary>
         /// <typeparam name="TValue">The type that would have been returned in case of success.</typeparam>
@@ -70,6 +96,31 @@ namespace ResultObject
         /// </code>
         /// </example>
         public static Result<TValue> Failure<TValue>(ResultError error) => Result<TValue>.Failure(error);
+
+        /// <summary>
+        /// Creates a failure Result with the specified error, using Unit as the success type.
+        /// </summary>
+        /// <param name="error">The ResultError instance describing the failure.</param>
+        /// <returns>A new Result instance representing a failed operation with Unit as the success type.</returns>
+        /// <remarks>
+        /// This is a convenience overload for creating failure results when no specific success type is needed.
+        /// It's particularly useful for operations that perform actions but don't return values.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// public Result&lt;Unit&gt; ValidateUser(User user)
+        /// {
+        ///     if (string.IsNullOrEmpty(user.Name))
+        ///         return Result.Failure(new ResultError("Name is required"));
+        ///     
+        ///     if (user.Age &lt; 18)
+        ///         return Result.Failure("Must be 18 or older");
+        ///         
+        ///     return Result.Success();
+        /// }
+        /// </code>
+        /// </example>
+        public static Result<Unit> Failure(ResultError error) => Failure<Unit>(error);
 
         /// <summary>
         /// Creates a failure Result with the specified error message and optional error code.
@@ -85,6 +136,33 @@ namespace ResultObject
         /// </example>
         public static Result<TValue> Failure<TValue>(string message, string? code = null) =>
             Result<TValue>.Failure(message, code);
+
+        /// <summary>
+        /// Creates a failure Result with the specified error message and optional error code, using Unit as the success type.
+        /// </summary>
+        /// <param name="message">The error message describing what went wrong.</param>
+        /// <param name="code">An optional error code for categorization.</param>
+        /// <returns>A new Result instance representing a failed operation with Unit as the success type.</returns>
+        /// <remarks>
+        /// This is a convenience overload for creating failure results with just a message and optional code
+        /// when no specific success type is needed. Internally, it creates a new ResultError instance.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// public Result&lt;Unit&gt; ProcessPayment(decimal amount)
+        /// {
+        ///     if (amount &lt;= 0)
+        ///         return Result.Failure("Amount must be greater than zero", "INVALID_AMOUNT");
+        ///         
+        ///     if (!_paymentGateway.IsAvailable)
+        ///         return Result.Failure("Payment service unavailable", "SERVICE_DOWN");
+        ///         
+        ///     // Process payment
+        ///     return Result.Success();
+        /// }
+        /// </code>
+        /// </example>
+        public static Result<Unit> Failure(string message, string? code = null) => Failure<Unit>(message, code);
 
         /// <summary>
         /// Creates a new failure result from an exception.
@@ -104,6 +182,37 @@ namespace ResultObject
         /// </code>
         /// </example>
         public static Result<TValue> Failure<TValue>(Exception exception) => Result<TValue>.Failure(exception);
+
+        /// <summary>
+        /// Creates a failure Result from an exception, using Unit as the success type.
+        /// </summary>
+        /// <param name="exception">The exception to convert into a failure result.</param>
+        /// <returns>A new Result instance representing a failed operation with Unit as the success type.</returns>
+        /// <remarks>
+        /// This is a convenience overload for wrapping exceptions in a Result when no specific success type is needed.
+        /// The exception's message and type are preserved in the ResultError.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// public Result&lt;Unit&gt; BackupData()
+        /// {
+        ///     try
+        ///     {
+        ///         _fileSystem.CreateBackup();
+        ///         return Result.Success();
+        ///     }
+        ///     catch (IOException ex)
+        ///     {
+        ///         return Result.Failure(ex);
+        ///     }
+        ///     catch (UnauthorizedAccessException ex)
+        ///     {
+        ///         return Result.Failure(ex);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        public static Result<Unit> Failure(Exception exception) => Failure<Unit>(exception);
 
         /// <summary>
         /// Executes the provided function within a try-catch block and wraps the result in a Result instance.
@@ -130,6 +239,34 @@ namespace ResultObject
         /// </code>
         /// </example>
         public static Result<TValue> Try<TValue>(Func<TValue> action) => Result<TValue>.Try(action);
+
+        /// <summary>
+        /// Executes the provided function within a try-catch block and wraps the result in a Result instance.
+        /// If an exception occurs, it is captured and converted into a failure Result.
+        /// </summary>
+        /// <param name="action">The function to execute that may throw an exception.</param>
+        /// <returns>
+        /// A success Unit Result, or a failure Unit Result containing the captured exception if one is thrown.
+        /// </returns>
+        /// <example>
+        /// Basic Usage:
+        /// <code>
+        /// var result = Result.Try(() => 
+        /// {
+        ///     SomeOperationThatMightThrow();
+        /// });
+        /// 
+        /// result.Match(
+        ///     success: _ => Console.WriteLine("Operation Succeeded"),
+        ///     failure: error => Console.WriteLine($"Operation failed: {error}")
+        /// );
+        /// </code>
+        /// </example>
+        public static Result<Unit> Try(Action action) => Result<Unit>.Try(() =>
+        {
+            action();
+            return ResultObject.Unit.Value;
+        });
 
         /// <summary>
         /// Creates a success Result containing a Unit value, used when an operation succeeds but returns no meaningful value.
